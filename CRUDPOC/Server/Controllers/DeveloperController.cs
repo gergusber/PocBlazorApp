@@ -2,15 +2,25 @@
 using CRUDPOC.Application.Developers.Queries.GetAllDevelopers;
 using CRUDPOC.Application.Developers.Queries.GetDeveloperById;
 using CRUDPOC.Shared.Dto;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 
 namespace CRUDPOC.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DeveloperController : BaseController
+    public class DeveloperController : ControllerBase// : BaseController
     {
+        private IMediator Mediator;
+
+        public DeveloperController(IMediator mediator)
+        {
+            Mediator = mediator;
+        }
+        //protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
