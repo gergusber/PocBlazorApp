@@ -1,0 +1,73 @@
+﻿@page "/filmdetails"
+@page "/filmdetails/{id}"
+@inject HttpClient HttpClient
+@using Interfaces
+@inject IFilmService FilmService
+@inject NavigationManager NavigationManager
+@using CRUDPOC.Shared.Dto;
+@using System;
+
+<h1>FilmDetails</h1>
+<EditForm Model="film">
+    <table>
+        <tr>
+            <td>
+                Title
+            </td>
+            <td>
+                <input type="text" @bind="film.Title" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Director
+            </td>
+            <td>
+                <input type="text" @bind="film.Director" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Release Date
+            </td>
+            <td>
+                <input type="datetime" @bind="film.ReleaseDate" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:center">
+                <input type="button" value="Save" @onclick="SaveFilm" />
+                <input type="button" value="Cancel" @onclick="CancelForm" />
+            </td>
+        </tr>
+    </table>
+</EditForm>
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    FilmDto film = new FilmDto();
+
+    protected void CancelForm()
+    {
+        NavigationManager.NavigateTo("/filmlist");
+    }
+    protected async Task SaveFilm()
+    {
+        await FilmService.SaveFilm(film);
+        NavigationManager.NavigateTo("/filmlist");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (id == null)
+        {
+            film.ReleaseDate = DateTime.Now;
+        }
+        else
+        {
+            film = await FilmService.GetFilmsDetails(id);
+        }
+
+    }
+}

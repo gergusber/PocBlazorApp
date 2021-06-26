@@ -1,0 +1,39 @@
+﻿@using CRUDPOC.Shared.Dto;
+
+<EditForm Model="@film" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Title :</label>
+        <div>
+            <InputText @bind-Value="@film.Title" />
+            <ValidationMessage For="@(() => film.Title)" />
+        </div>
+    </div>
+    <div class="form-group ">
+        <div>
+            <label>Director :</label>
+            <div>
+                <InputText @bind-Value="@film.Director" />
+                <ValidationMessage For="@(() => film.Director)" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group ">
+        <div>
+            <label>Release Date :</label>
+            <div>
+                <InputDate @bind-Value="@film.ReleaseDate" />
+                <ValidationMessage For="@(() => film.ReleaseDate)" />
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        @ButtonText
+    </button>
+</EditForm>
+@code {
+    [Parameter] public FilmDto film { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+}

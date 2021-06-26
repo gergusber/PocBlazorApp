@@ -1,0 +1,16 @@
+﻿@page "/film/create"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+@using CRUDPOC.Shared.Dto;
+
+<h3>Create</h3>
+<Form ButtonText="Create Film" film="film" OnValidSubmit="@createFilm" />
+
+@code {
+    FilmDto film = new FilmDto();
+    async Task createFilm()
+    {
+        await http.PostAsJsonAsync("Film/", film);
+        uriHelper.NavigateTo("film");
+    }
+}

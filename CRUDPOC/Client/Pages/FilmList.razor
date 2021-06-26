@@ -1,0 +1,61 @@
+﻿@page "/filmlist"
+@using System.Net.Http
+@inject HttpClient Http
+@using Interfaces
+@inject IFilmService FilmService
+@inject IJSRuntime js
+@using CRUDPOC.Shared.Dto
+
+<h1>Film List</h1>
+<p>List of Films</p>
+
+@if (films == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Director</th>
+                <th>Release Date</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in films)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Director</td>
+                    <td>@item.ReleaseDate</td>
+                    <td><a href="/filmdetails/@item.Id"><i>Edit</i></a></td>
+                    <td> <button class="btn btn-danger" @onclick="@(() => Delete(item.Id))">Delete</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private IEnumerable<FilmDto> films;
+    protected override async Task OnInitializedAsync()
+    {
+        films = await FilmService.GetAllFilms();
+    }
+
+    async Task Delete(string itemId)
+    {
+        var dev = films.First(x => x.Id.Equals(itemId));
+        if (await js.InvokeAsync<bool>
+            ("confirm", $"Do you want to delete {dev.Title}'s ({dev.Id}) Record?"))
+        {
+            await Http.DeleteAsync($"Film/{itemId}");
+            await OnInitializedAsync();
+        }
+    }
+}

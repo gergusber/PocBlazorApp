@@ -1,0 +1,67 @@
+﻿@page "/film"
+@inject HttpClient client
+@inject IJSRuntime js
+@using CRUDPOC.Shared.Dto;
+@using CRUDPOC.Shared.Helper;
+<h3>Films</h3>
+<small>Add as many Films as you wish.</small>
+<div class="form-group">
+    <a class="btn btn-success" href="film/create"><i class="oi oi-plus"></i> Create New</a>
+</div>
+<br>
+@if (films == null)
+{
+    <text>Loading...</text>
+}
+else if (films.Length == 0)
+{
+    <text>No Records Found.</text>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Director</th>
+                <th>Release Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (FilmDto item in films)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Director</td>
+                    <td>@item.ReleaseDate</td>
+                    <td>
+                        <a class="btn btn-success" href="film/edit/@item.Id">Edit</a>
+                        <button class="btn btn-danger" @onclick="@(() => Delete(item.Id))">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    FilmDto[] films { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await client.GetFromJsonAsync<ServiceResult<FilmDto[]>>("Film");
+        films = data.Data;
+    }
+    async Task Delete(string filmId)
+    {
+        var filmToDelete = films.First(x => x.Id == filmId);
+        if (await js.InvokeAsync<bool>
+            ("confirm", $"Do you want to delete the film with Title: {filmToDelete.Title} and director: {filmToDelete.Director} ?"))
+        {
+            //await client.DeleteAsync($"Film/{filmId}");
+            var uri = "Film/" + filmId;
+            var res = await client.DeleteAsync(uri);
+
+            await OnInitializedAsync();
+        }
+    }
+}

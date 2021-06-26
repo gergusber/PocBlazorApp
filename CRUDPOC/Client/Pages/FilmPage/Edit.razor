@@ -1,0 +1,22 @@
+﻿@page "/film/edit/{filmId}"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+@inject IJSRuntime js
+@using CRUDPOC.Shared.Dto;
+
+<h3>Edit</h3>
+<Form ButtonText="Update" film="film" OnValidSubmit="@EditFilm" />
+@code {
+    [Parameter] public string filmId { get; set; }
+    FilmDto film = new FilmDto();
+    protected async override Task OnParametersSetAsync()
+    {
+        film = await http.GetFromJsonAsync<FilmDto>($"Film/{filmId}");
+    }
+    async Task EditFilm()
+    {
+        await http.PutAsJsonAsync("Film", film);
+        await js.InvokeVoidAsync("alert", $"Updated Successfully!");
+        uriHelper.NavigateTo("film");
+    }
+}
