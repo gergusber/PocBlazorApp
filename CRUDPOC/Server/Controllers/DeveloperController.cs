@@ -19,7 +19,6 @@ namespace CRUDPOC.Server.Controllers
         {
             Mediator = mediator;
         }
-        //protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
 
         [HttpGet]
         public async Task<IActionResult> Get()
